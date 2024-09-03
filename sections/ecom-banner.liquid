@@ -1,0 +1,112 @@
+<section>
+  <header class="bg-[#F5F5F5] text-white p-4">
+    <!-- Toggle Button (Visible on mobile and tablet) -->
+    <button class="block md:hidden text-black focus:outline-none" id="menu-toggle">
+      <i class="fas fa-bars fa-lg"></i>
+    </button>
+
+    <!-- Container (Hidden on small screens) -->
+    <div id="navbar" class="hidden md:flex md:items-center md:justify-between md:container mx-auto">
+      <!-- Left Logo -->
+      <div class="md:flex-shrink-0 text-xl mb-4 md:mb-0">
+        <h2 class="uppercase text-black px-4 md:px-12 font-semibold text-base md:text-xl">
+          {{ section.settings['text-logo'] | default: 'Default Logo' }}
+        </h2>
+      </div>
+
+      <!-- Center Text -->
+      <div class="md:flex-1 text-center mb-4 md:mb-0">
+        <h1 class="text-base md:text-xl font-normal text-black">
+          {{ section.settings['info-text'] | default: 'Default Info Text' }}
+        </h1>
+      </div>
+
+      <!-- Choose Gift Button -->
+      <div class="md:flex-shrink-0">
+        <a
+          href="#choose-gift"
+          class="bg-[#FFF544] text-black py-2 px-6 md:px-14 mx-4 md:mx-12 transition duration-300 uppercase flex items-center justify-center"
+        >
+          Choose Gift
+          <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Mobile Menu (hidden by default) -->
+    <nav id="mobile-menu" class="md:hidden fixed top-0 left-0 w-full h-screen bg-white z-50 hidden">
+      <div class="p-4 flex justify-between items-center border-b">
+        <div class="text-xl">
+          <h2 class="uppercase text-black font-bold">
+            {{ section.settings['text-logo'] | default: 'Default Logo' }}
+          </h2>
+        </div>
+        <button class="text-black" id="close-menu">
+          <i class="fas fa-times fa-lg"></i>
+        </button>
+      </div>
+      <div class="flex flex-col items-center mt-8">
+        <a href="#home" class="text-black py-2 text-lg">Home</a>
+        <a href="#about" class="text-black py-2 text-lg">About</a>
+        <a
+          href="#choose-gift"
+          class="bg-[#FFF544] text-black py-2 px-4 mt-4 transition duration-300 uppercase flex items-center justify-center"
+        >
+          Choose Gift
+          <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Add this JavaScript to toggle the menu -->
+  <script>
+    function updateVisibility() {
+      const element = document.getElementById('navbar');
+      const isMediumOrLarger = window.matchMedia('(min-width: 768px)').matches;
+
+      if (element) {
+        if (isMediumOrLarger) {
+          // Remove hidden class for medium and larger screens
+          element.classList.remove('hidden');
+        } else {
+          // Add hidden class for small screens
+          element.classList.add('hidden');
+        }
+      }
+    }
+
+    // Run on initial load
+    updateVisibility();
+
+    // Run on window resize
+    window.addEventListener('resize', updateVisibility);
+    document.getElementById('menu-toggle').addEventListener('click', function () {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+
+    document.getElementById('close-menu').addEventListener('click', function () {
+      document.getElementById('mobile-menu').classList.add('hidden');
+    });
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Banner Settings",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text-logo",
+      "label": "Logo Text",
+      "default": "Tisso viso"
+    },
+    {
+      "type": "text",
+      "id": "info-text",
+      "label": "Announcement Message",
+      "default": "Find the ideal gift for your loved ones"
+    }
+  ]
+}
+{% endschema %}
