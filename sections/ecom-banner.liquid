@@ -60,45 +60,51 @@
     </nav>
   </header>
 
-  <div class="bg-gray-100">
-    <div class="max-w-6xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <div class="flex flex-col md:flex-row">
-        <!-- Left section - Image -->
-        <div class="md:w-1/2">
-          <img src="https://placehold.co/600x600" alt="Product Image" class="w-full rounded-lg">
-        </div>
+  <div class="bg-red-400 w-full">
+    <!-- Display banner content for small screens -->
+    <div class="block md:hidden">
+      <h1 class=" text-black font-jost font-medium text-3xl text-center my-10">The Gift Guide</h1>
 
-        <!-- Right section - Content -->
-        <div class="md:w-1/2 md:pl-10 mt-4 md:mt-0">
-          <h1 class="text-3xl font-bold text-gray-800">Product Name</h1>
-          <p class="text-xl text-gray-600 mt-2">$99.99</p>
-
-          <div class="mt-4">
-            <p class="text-gray-700">
-              This is a brief description of the product. It gives an overview of the product’s features and benefits.
-            </p>
-          </div>
-
-          <div class="mt-6">
-            <label for="size" class="block text-sm font-medium text-gray-700">Size</label>
-            <select
-              id="size"
-              name="size"
-              class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-            >
-              <option>Small</option>
-              <option>Medium</option>
-              <option>Large</option>
-            </select>
-          </div>
-
-          <div class="mt-6">
-            <button class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-500">
-              Add to Cart
-            </button>
-          </div>
-        </div>
+      <div class="flex justify-center">
+        <p class="text-black text-center font-jost font-normal w-[21.25rem] text-base">
+          Discover Joy: Your Ultimate Holiday Gift Destination.
+        </p>
       </div>
+
+      <button class="absolute top-[21.063rem] left-1/3 py-3 px-3 bg-black text-white font-jost font-normal text-base w-[12.063rem] h-[2.813rem] hover:bg-gray-800 transition-colors duration-300">
+        SHOP NOW
+        <i class="fas fa-arrow-right ml-2"></i>
+      </button>
+    </div>
+
+    <div class="sm:my-5 md:my-0">
+      {% if section.settings['banner-image'] != blank %}
+        <!-- Display the image as the banner -->
+        <img
+          src="{{ section.settings.banner-image | img_url: 'large' }}"
+          alt="Image Banner"
+          class="w-full object-top sm:h-[16.5rem] md:h-[48.75rem]"
+        >
+      {% else %}
+        <!-- Display the placeholder SVG if no product image is available -->
+        {{ 'lifestyle-2' | placeholder_svg_tag }}
+      {% endif %}
+    </div>
+
+    <!-- Display banner content on medium and large screens -->
+    <div
+      id="banner-content"
+      class="hidden md:absolute md:top-[30.563rem] md:left-[4.188rem] md:bg-purple-400 md:flex md:flex-col md:items-center md:justify-center md:text-center md:space-y-9"
+    >
+      <h1 class="text-black font-jost font-medium text-3xl md:text-7xl">The Gift Guide</h1>
+      <p class="text-black text-left font-jost font-normal w-full max-w-[30.188rem] text-base md:text-xl">
+        Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts
+        to delight your loved ones this holiday season.
+      </p>
+      <button class="bg-black text-white font-jost font-normal text-sm md:text-base w-full max-w-xs h-12 px-6 py-2 flex items-center justify-center hover:bg-gray-800 transition-colors duration-300">
+        SHOP NOW
+        <i class="fas fa-arrow-right ml-2"></i>
+      </button>
     </div>
   </div>
 </section>
@@ -124,16 +130,23 @@
       "id": "gift-btn-text",
       "label": "Button Text",
       "default": "Choose Gift"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner-image",
+      "label": "Banner Image"
     }
   ]
 }
 {% endschema %}
-<!-- Add this JavaScript to toggle the menu -->
+
 <script>
+  // Show navbar for medium and large screens
   document.addEventListener('DOMContentLoaded', function () {
-    // Function to update the visibility of the navbar
+    // Function to update the visibility of the navbar and banner content
     function updateVisibility() {
       const navbar = document.getElementById('navbar');
+      const bannercontent = document.getElementById('banner-content');
       const isMediumOrLarger = window.matchMedia('(min-width: 768px)').matches;
 
       if (navbar) {
@@ -141,6 +154,14 @@
           navbar.classList.remove('hidden');
         } else {
           navbar.classList.add('hidden');
+        }
+      }
+
+      if (bannercontent) {
+        if (isMediumOrLarger) {
+          bannercontent.classList.remove('hidden');
+        } else {
+          bannercontent.classList.add('hidden');
         }
       }
     }
@@ -169,4 +190,6 @@
       });
     }
   });
+
+  //Banner content show on medium and larger screen
 </script>
