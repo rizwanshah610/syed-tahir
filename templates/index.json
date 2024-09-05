@@ -13,9 +13,13 @@
       "type": "ecom-banner",
       "settings": {
       }
+    },
+    "grid":{
+      "type":"ecom-grid"
     }
   },
   "order": [
-    "banner"
+    "banner",
+    "grid"
   ]
 }

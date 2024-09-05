@@ -1,0 +1,107 @@
+<section class="bg-red-400 py-24 px-10">
+  <h2 class="text-black font-lustria font-normal text-2xl sm:text-3xl md:text-4xl lg:text-5xl px-5 w-full text-center sm:text-left">
+    Tisso vision in the wild
+  </h2>
+
+  <div class="grid grid-cols-3 gap-4 p-4">
+    <div class=" relative h-auto flex items-center justify-center">
+      <img src="{{ 'grid-1.png' | asset_img_url : 'large' }}" alt="Product 1" class="object-cover h-full w-full">
+
+      <!-- Plus icon -->
+      <div class="absolute inset-1 flex items-center justify-center">
+        <div class="bg-[#F8F8F8] flex items-center justify-center text-black rounded-full w-6 h-6">
+          <i class="fas fa-plus text-xl"></i>
+        </div>
+      </div>
+    </div>
+    <div class="bg-gray-200 h-auto flex items-center justify-center">
+      <img src="{{ 'grid-1.png' | asset_img_url : 'large' }}" alt="Product 1" class="object-cover h-full w-full">
+    </div>
+    <div class="bg-gray-200 h-auto flex items-center justify-center">
+      <img src="{{ 'grid-1.png' | asset_img_url : 'large' }}" alt="Product 1" class="object-cover h-full w-full">
+    </div>
+    <div class="bg-gray-200 h-auto flex items-center justify-center">
+      <img src="{{ 'grid-1.png' | asset_img_url : 'large' }}" alt="Product 1" class="object-cover h-full w-full">
+    </div>
+    <div class="bg-gray-200 h-auto flex items-center justify-center">
+      <img src="{{ 'grid-1.png' | asset_img_url : 'large' }}" alt="Product 1" class="object-cover h-full w-full">
+    </div>
+    <div class="bg-gray-200 h-auto flex items-center justify-center">
+      <img src="{{ 'grid-1.png' | asset_img_url : 'large' }}" alt="Product 1" class="object-cover h-full w-full">
+    </div>
+  </div>
+
+  <!-- Popup code start -->
+
+  <div class="w-[20.438rem] h-fit bg-white border rounded-lg shadow-md overflow-hidden m-auto">
+    <!-- Product Image and Details -->
+    <div class="flex pt-9">
+      <!-- Product Image -->
+      <div class="w-1/2 p-4">
+        <img
+          src="{{ 'grid-1.png' | asset_img_url : 'small' }}"
+          alt="Product Image"
+          class="w-[7.5rem] h-[8.75rem] object-cover"
+        >
+      </div>
+
+      <!-- Product Details -->
+      <div class="w-1/2 p-4 flex flex-col justify-between">
+        <div>
+          <!-- Product Name -->
+          <h2 class=" text-base font-jost font-light mb-2 text-black">Product Name</h2>
+
+          <!-- Product Price -->
+          <p class="font-lustria font-normal text-base text-black mb-2">$19.99</p>
+
+          <!-- Product Description -->
+          <p class="font-jost font-light text-sm text-black mb-4 truncate">
+            A brief description of the product goes here. It provides essential details and highlights the features.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variants and Size Selection -->
+    <div class="px-4 pb-4">
+      <div class="mb-4">
+        <!-- Color Variants Heading -->
+        <h2 class="font-jost font-normal text-sm">Color</h2>
+        <!-- Color Variants Button -->
+        <div class="flex mb-4">
+          <!-- Button with Color Variant 1 -->
+          <button class="flex w-full border border-black text-sm text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+            <!-- Color Indicator -->
+            <span class="w-2 h-full bg-red-500"></span>
+            <!-- Button Text -->
+            <span class="flex py-2 pl-1 justify-start font-jost font-normal text-lg">Color Variant 1</span>
+          </button>
+
+          <button class="flex w-full border border-black text-sm text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+            <!-- Color Indicator -->
+            <span class="w-2 h-full bg-purple-500"></span>
+            <!-- Button Text -->
+            <span class="flex py-2 pl-1 justify-start font-jost font-normal text-lg">Color Variant 1</span>
+          </button>
+        </div>
+
+        <!-- Size Dropdown Heading -->
+
+        <h2 class="font-jost font-normal text-sm">Size</h2>
+        <!-- Size Dropdown -->
+        <select class="w-full  border border-black p-2">
+          <option class="font-jost font-normal text-base text-black">Small</option>
+          <option class="font-jost font-normal text-base text-black">Medium</option>
+          <option class="font-jost font-normal text-base text-black">Large</option>
+          <!-- Additional sizes can be added here -->
+        </select>
+      </div>
+
+      <!-- Add to Cart Button -->
+      <button class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-md w-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+        Add to Cart
+      </button>
+    </div>
+  </div>
+  <!-- Popup code end -->
+</section>

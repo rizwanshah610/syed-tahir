@@ -1,11 +1,51 @@
-<section>
-  <header class="bg-[#F5F5F5] text-white p-4">
-    <!-- Toggle Button (Visible on mobile and tablet) -->
-    <button class="block md:hidden text-black focus:outline-none" id="menu-toggle">
-      <i class="fas fa-bars fa-lg"></i>
-    </button>
+<!-- Banner Section Start -->
 
-    <!-- Container (Hidden on small screens) -->
+<section>
+  <!-- Navbar/header -->
+  <header class="bg-[#F5F5F5] text-white p-4">
+    <!-- Mobile Menu (hidden by default) -->
+    <nav id="mobile-menu" class="md:hidden fixed top-0 left-0 w-full h-screen  z-50 hidden">
+      <div class="bg-[#F5F5F5] p-4 flex justify-between items-center border-b">
+        <div class="text-2xl" style="margin:auto">
+          <a href="{{shop.url}}" class="mobile-logo uppercase text-black font-bold">
+            {{ section.settings['text-logo'] }}
+          </a>
+        </div>
+        <button
+          class="absolute left-4 top-4 text-black transition duration-300 ease-in-out transform hover:rotate-90 hover:scale-110 hover:text-red-500"
+          id="close-menu"
+        >
+          <i class="fas fa-times fa-lg"></i>
+        </button>
+      </div>
+      <div class="bg-[#F2F2F2] flex flex-col items-center ">
+        <a class="text-black py-2 font-normal text-2xl">
+          {{ section.settings['info-text'] }}
+        </a>
+        <a
+          href="#choose-gift"
+          class="bg-[#FFF544] text-black py-2 px-1 mt-4 transition duration-300 uppercase flex items-center justify-center w-[50%]"
+        >
+          {{ section.settings['gift-btn-text'] }}
+          <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Toggle Button (Visible on mobile and tablet) -->
+    <div id="menu-toggle" class="flex items-center justify-between">
+      <button class="block md:hidden text-black focus:outline-none transition duration-300 ease-in-out transform hover:scale-110 hover:text-gray-700 focus:scale-110 focus:text-gray-700">
+        <i class="fas fa-bars fa-lg"></i>
+      </button>
+
+      <div class="md:hidden flex items-center justify-center w-full">
+        <a href="{{shop.url}}" class="mobile-logo uppercase text-black font-bold text-2xl">
+          {{ section.settings['text-logo'] }}
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Nav (Hidden on small screens) -->
     <div id="navbar" class="hidden md:flex md:items-center md:justify-between md:container mx-auto">
       <!-- Left Logo -->
       <div class="md:flex-shrink-0 text-xl mb-4 md:mb-0">
@@ -25,58 +65,36 @@
       <div class="md:flex-shrink-0">
         <a
           href="#choose-gift"
-          class="bg-[#FFF544] text-black py-2 px-6 md:px-14 mx-4 md:mx-12 transition duration-300 uppercase flex items-center justify-center"
+          class="bg-[#FFF544] text-black py-2 px-6 md:px-14 mx-4 md:mx-12 transition duration-300 ease-in-out transform hover:bg-yellow-500 hover:scale-105 hover:shadow-lg uppercase flex items-center justify-center"
         >
           Choose Gift
           <i class="fas fa-arrow-right ml-2"></i>
         </a>
       </div>
     </div>
-
-    <!-- Mobile Menu (hidden by default) -->
-    <nav id="mobile-menu" class="md:hidden fixed top-0 left-0 w-full h-screen  z-50 hidden">
-      <div class="bg-[#F5F5F5] p-4 flex justify-between items-center border-b">
-        <div class="text-2xl" style="margin:auto">
-          <a href="{{shop.url}}" class="mobile-logo uppercase text-black font-bold">
-            {{ section.settings['text-logo'] }}
-          </a>
-        </div>
-        <button class="absolute left-4 top-4 text-black" id="close-menu">
-          <i class="fas fa-times fa-lg"></i>
-        </button>
-      </div>
-      <div class="bg-[#F2F2F2] flex flex-col items-center ">
-        <a class="text-black py-2 font-normal text-2xl">
-          {{ section.settings['info-text'] }}
-        </a>
-        <a
-          href="#choose-gift"
-          class="bg-[#FFF544] text-black py-2 px-1 mt-4 transition duration-300 uppercase flex items-center justify-center w-[50%]"
-        >
-          {{ section.settings['gift-btn-text'] }}
-          <i class="fas fa-arrow-right ml-2"></i>
-        </a>
-      </div>
-    </nav>
   </header>
 
-  <div class="bg-red-400 w-full">
+  <!-- Banner -->
+  <div class="w-full">
     <!-- Display banner content for small screens -->
     <div class="block md:hidden">
-      <h1 class=" text-black font-jost font-medium text-3xl text-center my-10">The Gift Guide</h1>
+      <h1 class=" text-black font-jost font-medium text-3xl text-center my-10">
+        {{ section.settings['banner-heading'] }}
+      </h1>
 
       <div class="flex justify-center">
         <p class="text-black text-center font-jost font-normal w-[21.25rem] text-base">
-          Discover Joy: Your Ultimate Holiday Gift Destination.
+          {{ section.settings['banner-text'] | truncate: 51, '' }}
         </p>
       </div>
 
-      <button class="absolute top-[21.063rem] left-1/3 py-3 px-3 bg-black text-white font-jost font-normal text-base w-[12.063rem] h-[2.813rem] hover:bg-gray-800 transition-colors duration-300">
-        SHOP NOW
+      <button class="absolute top-[21.063rem] left-1/3 py-3 px-3 bg-black text-white font-jost font-normal text-base w-[12.063rem] h-[2.813rem] transition duration-300 ease-in-out transform hover:bg-gray-800 hover:scale-105 hover:shadow-lg">
+        {{ section.settings['banner-btn'] }}
         <i class="fas fa-arrow-right ml-2"></i>
       </button>
     </div>
 
+    <!-- Banner image for all screens -->
     <div class="sm:my-5 md:my-0">
       {% if section.settings['banner-image'] != blank %}
         <!-- Display the image as the banner -->
@@ -86,7 +104,7 @@
           class="w-full object-top sm:h-[16.5rem] md:h-[48.75rem]"
         >
       {% else %}
-        <!-- Display the placeholder SVG if no product image is available -->
+        <!-- Display the placeholder SVG if no banner image is available -->
         {{ 'lifestyle-2' | placeholder_svg_tag }}
       {% endif %}
     </div>
@@ -94,20 +112,29 @@
     <!-- Display banner content on medium and large screens -->
     <div
       id="banner-content"
-      class="hidden md:absolute md:top-[30.563rem] md:left-[4.188rem] md:bg-purple-400 md:flex md:flex-col md:items-center md:justify-center md:text-center md:space-y-9"
+      class="hidden md:absolute md:top-[14.563rem] lg:top-[30.563rem] md:left-[4.188rem] md:flex md:flex-col md:items-center md:justify-center md:text-center md:space-y-9"
     >
-      <h1 class="text-black font-jost font-medium text-3xl md:text-7xl">The Gift Guide</h1>
+      <h1 class="text-black font-jost font-medium text-3xl md:text-7xl">{{ section.settings['banner-heading'] }}</h1>
       <p class="text-black text-left font-jost font-normal w-full max-w-[30.188rem] text-base md:text-xl">
-        Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts
-        to delight your loved ones this holiday season.
+        {{ section.settings['banner-text'] }}
       </p>
-      <button class="bg-black text-white font-jost font-normal text-sm md:text-base w-full max-w-xs h-12 px-6 py-2 flex items-center justify-center hover:bg-gray-800 transition-colors duration-300">
-        SHOP NOW
+      <button class="uppercase bg-black text-white font-jost font-normal text-sm md:text-base w-full max-w-xs h-12 px-6 py-2 flex items-center justify-center hover:bg-gray-800 transition-colors duration-300">
+        {{ section.settings['banner-btn'] }}
         <i class="fas fa-arrow-right ml-2"></i>
       </button>
     </div>
   </div>
+
+  <!-- Banner bottom -->
+
+  <div class="bg-[#F5F5F5] w-full h-[2.125rem] px-[0.625rem] py-[3.125rem] flex items-center justify-center text-center">
+    <p class="text-black font-jost text-base">
+      {{ section.settings['banner-bottom-text'] }}
+    </p>
+  </div>
 </section>
+
+<!-- Banner Section End -->
 
 {% schema %}
 {
@@ -135,6 +162,31 @@
       "type": "image_picker",
       "id": "banner-image",
       "label": "Banner Image"
+    },
+    {
+      "type": "text",
+      "id": "banner-heading",
+      "label": "Banner Heading",
+      "default": "The Gift Guide"
+    },
+    {
+      "type": "text",
+      "id": "banner-text",
+      "label": "Banner Text",
+      "default": "Discover Joy Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season"
+    },
+
+    {
+      "type": "text",
+      "id": "banner-btn",
+      "label": "Button Content Button",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "text",
+      "id": "banner-bottom-text",
+      "label": "Banner Bottom",
+      "default": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 9XL"
     }
   ]
 }

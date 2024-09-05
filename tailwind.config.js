@@ -11,6 +11,7 @@ module.exports = {
     extend: {
       fontFamily: {
         'jost': ['Jost', 'sans-serif'],
+        'lustria':['Lustria','serif']
       },
       height: {
         '48.75rem': '48.75rem',
