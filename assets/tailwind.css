@@ -1179,6 +1179,10 @@ select {
   width: 100% !important;
 }
 
+.w-\[20\.438rem\] {
+  width: 20.438rem !important;
+}
+
 .max-w-4xl {
   max-width: 56rem !important;
 }
