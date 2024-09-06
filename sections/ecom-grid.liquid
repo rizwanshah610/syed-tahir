@@ -39,7 +39,7 @@
       <!-- Product Image -->
       <div class="w-1/2 p-4">
         <img
-          src="{{ 'grid-1.png' | asset_img_url : 'small' }}"
+          src="{{ 'grid-1.png' | asset_img_url : 'large' }}"
           alt="Product Image"
           class="w-[7.5rem] h-[8.75rem] object-cover"
         >
@@ -89,12 +89,21 @@
 
         <h2 class="font-jost font-normal text-sm">Size</h2>
         <!-- Size Dropdown -->
-        <select class="w-full  border border-black p-2">
-          <option class="font-jost font-normal text-base text-black">Small</option>
-          <option class="font-jost font-normal text-base text-black">Medium</option>
-          <option class="font-jost font-normal text-base text-black">Large</option>
-          <!-- Additional sizes can be added here -->
-        </select>
+        <div class="relative w-full">
+          <select
+            class="w-full appearance-none border border-black p-2 pr-12 font-jost font-normal text-base text-black"
+            style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background: none; padding-right: 2.5rem;"
+          >
+            <option>Small</option>
+            <option>Medium</option>
+            <option>Large</option>
+          </select>
+          <!-- Custom arrow with reduced vertical border -->
+          <div class="absolute inset-y-0 right-0 flex items-center pl-2 pr-3 pointer-events-none">
+            <i class="fas fa-chevron-down text-black relative"></i>
+            <span class="absolute left-0 top-[10%] h-[87%] border-l border-black"></span>
+          </div>
+        </div>
       </div>
 
       <!-- Add to Cart Button -->
