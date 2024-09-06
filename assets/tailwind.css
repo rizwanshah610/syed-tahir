@@ -1012,8 +1012,16 @@ select {
   right: 0px !important;
 }
 
+.right-5 {
+  right: 1.25rem !important;
+}
+
 .top-0 {
   top: 0px !important;
+}
+
+.top-2 {
+  top: 0.5rem !important;
 }
 
 .top-4 {
@@ -1026,22 +1034,6 @@ select {
 
 .top-\[21\.063rem\] {
   top: 21.063rem !important;
-}
-
-.right-2 {
-  right: 0.5rem !important;
-}
-
-.top-2 {
-  top: 0.5rem !important;
-}
-
-.right-4 {
-  right: 1rem !important;
-}
-
-.right-5 {
-  right: 1.25rem !important;
 }
 
 .isolate {
@@ -1071,13 +1063,12 @@ select {
   margin-bottom: 2.5rem !important;
 }
 
-.my-5 {
-  margin-top: 1.25rem !important;
-  margin-bottom: 1.25rem !important;
-}
-
 .mb-2 {
   margin-bottom: 0.5rem !important;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem !important;
 }
 
 .mb-4 {
@@ -1096,6 +1087,10 @@ select {
   margin-top: 0.25rem !important;
 }
 
+.mt-10 {
+  margin-top: 2.5rem !important;
+}
+
 .mt-2 {
   margin-top: 0.5rem !important;
 }
@@ -1106,22 +1101,6 @@ select {
 
 .mt-8 {
   margin-top: 2rem !important;
-}
-
-.mt-5 {
-  margin-top: 1.25rem !important;
-}
-
-.mt-10 {
-  margin-top: 2.5rem !important;
-}
-
-.mb-5 {
-  margin-bottom: 1.25rem !important;
-}
-
-.mb-3 {
-  margin-bottom: 0.75rem !important;
 }
 
 .block {
@@ -1425,11 +1404,6 @@ select {
   background-color: rgb(0 0 0 / var(--tw-bg-opacity)) !important;
 }
 
-.bg-blue-500 {
-  --tw-bg-opacity: 1 !important;
-  background-color: rgb(59 130 246 / var(--tw-bg-opacity)) !important;
-}
-
 .bg-gray-100 {
   --tw-bg-opacity: 1 !important;
   background-color: rgb(243 244 246 / var(--tw-bg-opacity)) !important;
@@ -1546,11 +1520,6 @@ select {
 .py-\[3\.125rem\] {
   padding-top: 3.125rem !important;
   padding-bottom: 3.125rem !important;
-}
-
-.py-5 {
-  padding-top: 1.25rem !important;
-  padding-bottom: 1.25rem !important;
 }
 
 .pb-4 {
@@ -1841,14 +1810,14 @@ select {
   color: rgb(55 65 81 / var(--tw-text-opacity)) !important;
 }
 
-.hover\:text-red-500:hover {
-  --tw-text-opacity: 1 !important;
-  color: rgb(239 68 68 / var(--tw-text-opacity)) !important;
-}
-
 .hover\:text-gray-800:hover {
   --tw-text-opacity: 1 !important;
   color: rgb(31 41 55 / var(--tw-text-opacity)) !important;
+}
+
+.hover\:text-red-500:hover {
+  --tw-text-opacity: 1 !important;
+  color: rgb(239 68 68 / var(--tw-text-opacity)) !important;
 }
 
 .hover\:shadow-lg:hover {
