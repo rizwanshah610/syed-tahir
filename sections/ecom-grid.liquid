@@ -1,4 +1,4 @@
-<section class="bg-red-400 py-24 px-10">
+<section class="py-24 px-10">
   <h2 class="text-black font-lustria font-normal text-2xl sm:text-3xl md:text-4xl lg:text-5xl px-5 w-full text-center sm:text-left">
     Tisso vision in the wild
   </h2>
@@ -15,106 +15,173 @@
 
         <!-- Plus Icon -->
         <div class="absolute inset-1 flex items-center justify-center">
-          <div class="bg-[#F8F8F8] flex items-center justify-center text-black rounded-full w-6 h-6">
+          <button
+            class="bg-[#F8F8F8] flex items-center justify-center text-black rounded-full w-6 h-6 plus-icon"
+            data-popup-id="popup-{{ forloop.index }}"
+          >
             <i class="fas fa-plus text-xl"></i>
-          </div>
+          </button>
         </div>
       </div>
 
       <!-- Popup code start -->
-      <div class="relative w-[20.438rem] h-fit bg-white border rounded-lg shadow-md overflow-hidden m-auto">
-        <!-- Close Icon -->
-        <button class="absolute top-2 right-5 text-black hover:text-gray-800 focus:outline-none">
-          <i class="fas fa-times"></i>
-        </button>
+      <div
+        id="popup-{{ forloop.index }}"
+        class="popup-overlay hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50"
+      >
+        <div class="relative w-[20.438rem] h-fit bg-white border rounded-lg shadow-md overflow-hidden m-auto">
+          <!-- Close Icon -->
+          <button class="absolute top-2 right-5 text-black hover:text-gray-800 focus:outline-none close-popup">
+            <i class="fas fa-times"></i>
+          </button>
 
-        <!-- Product Image and Details -->
-        <div class="flex pt-9">
-          <!-- Product Image -->
-          <div class="w-1/2 p-4">
-            <img
-              src="{{ product.featured_image | img_url: 'large' }}"
-              alt="{{ product.title }}"
-              class="w-[7.5rem] h-[8.75rem] object-cover"
-            >
-          </div>
-
-          <!-- Product Details -->
-          <div class="w-1/2 p-4 flex flex-col justify-between">
-            <div>
-              <!-- Product Name -->
-              <h2 class=" text-base font-jost font-light mb-2 text-black">{{ product.title }}</h2>
-
-              <!-- Product Price -->
-              <p class="font-lustria font-normal text-base text-black mb-2">{{ product.price | money }}</p>
-
-              <!-- Product Description -->
-              <p class="font-jost font-light text-sm text-black mb-4 truncate">
-                {{ product.description | truncate: 100 }}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Variants and Size Selection -->
-        <div class="px-4 pb-4">
-          <!-- Color Variants Heading -->
-          {% if product.options.size > 1 and product.options contains 'Color' %}
-            <h2 class="font-jost font-normal text-sm">Color</h2>
-            <div class="flex mb-4">
-              <!-- Loop through product variants for color selection -->
-              {% assign color_options = '' %}
-              {% for variant in product.variants %}
-                {% if color_options contains variant.option2 %}
-                  {% continue %}
-                {% else %}
-                  {% assign color_options = color_options | append: variant.option2 %}
-                  <button class="flex w-full border border-black text-sm text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                    <!-- Color Indicator -->
-                    <span class="w-2 h-full" style="background-color: {{ variant.option2 }}"></span>
-                    <!-- Button Text -->
-                    <span class="flex py-2 pl-1 justify-start font-jost font-normal text-lg">
-                      {{- variant.option2 -}}
-                    </span>
-                  </button>
-                {% endif %}
-              {% endfor %}
-            </div>
-          {% endif %}
-
-          <!-- Size Dropdown -->
-          {% if product.options.size > 1 and product.options contains 'Size' %}
-            <h2 class="font-jost font-normal text-sm">Size</h2>
-            <div class="relative w-full">
-              <select
-                class="w-full appearance-none border border-black p-2 pr-12 font-jost font-normal text-base text-black"
-                style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background: none; padding-right: 2.5rem;"
+          <!-- Product Image and Details -->
+          <div class="flex pt-9">
+            <!-- Product Image -->
+            <div class="w-1/2 p-4">
+              <img
+                src="{{ product.featured_image | img_url: 'large' }}"
+                alt="{{ product.title }}"
+                class="w-[7.5rem] h-[8.75rem] object-cover"
               >
-                {% assign size_options = '' %}
-                {% for variant in product.variants %}
-                  {% if size_options contains variant.option1 %}
-                    {% continue %}
-                  {% else %}
-                    {% assign size_options = size_options | append: variant.option1 %}
-                    <option>{{ variant.option1 }}</option>
-                  {% endif %}
-                {% endfor %}
-              </select>
-              <div class="absolute inset-y-0 right-0 flex items-center pl-2 pr-3 pointer-events-none">
-                <i class="fas fa-chevron-down text-black relative"></i>
-                <span class="absolute left-0 top-[10%] h-[87%] border-l border-black"></span>
+            </div>
+
+            <!-- Product Details -->
+            <div class="w-1/2 p-4 flex flex-col justify-between">
+              <div>
+                <!-- Product Name -->
+                <h2 class="text-base font-jost font-light mb-2 text-black">{{ product.title }}</h2>
+
+                <!-- Product Price -->
+                <p class="font-lustria font-normal text-base text-black mb-2">{{ product.price | money }}</p>
+
+                <!-- Product Description -->
+                <p class="font-jost font-light text-sm text-black mb-4 truncate">
+                  {{ product.description | truncate: 25 }}
+                </p>
               </div>
             </div>
-          {% endif %}
-        </div>
+          </div>
 
-        <!-- Add to Cart Button -->
-        <button class="bg-black text-white font-jost font-normal mt-10 mb-3 py-2 px-4 w-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-          Add to Cart
-          <i class="fas fa-arrow-right ml-2"></i>
-        </button>
+          <!-- Variants and Size Selection -->
+          <div class="px-4 pb-4">
+            {% if product.options.size > 1 and product.options contains 'Color' %}
+              <h2 class="font-jost font-normal text-sm">Color</h2>
+              <div class="flex mb-4">
+                {% assign color_options = '' %}
+                {% for variant in product.variants %}
+                  {% unless color_options contains variant.option2 %}
+                    {% assign color_options = color_options | append: variant.option2 %}
+                    <button
+                      class="flex w-full border border-black text-sm text-black hover:bg-black hover:text-white focus:outline-none variant-button"
+                      data-variant="{{ variant.option2 }}"
+                    >
+                      <span class="w-2 h-full variant-color" style="background-color: {{ variant.option2 }}"></span>
+                      <span class="flex py-2 pl-1 justify-start font-jost font-normal text-lg">
+                        {{- variant.option2 -}}
+                      </span>
+                    </button>
+                  {% endunless %}
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            {% if product.options.size > 1 and product.options contains 'Size' %}
+              <h2 class="font-jost font-normal text-sm">Size</h2>
+              <div class="relative w-full">
+                <select
+                  class="w-full appearance-none border border-black p-2 pr-12 font-jost font-normal text-base text-black"
+                >
+                  <!-- Default option -->
+                  <option value="" disabled selected>Choose your size</option>
+
+                  <!-- Dynamic options -->
+                  {% assign size_options = '' %}
+                  {% for variant in product.variants %}
+                    {% unless size_options contains variant.option1 %}
+                      {% assign size_options = size_options | append: variant.option1 %}
+                      <option>
+                        {{ variant.option1 }}
+                      </option>
+                    {% endunless %}
+                  {% endfor %}
+                </select>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Add to Cart Button -->
+          <div class="px-4 pb-4">
+            <!-- Added padding to the parent div for left and right space -->
+            <button class="bg-black text-white font-jost font-normal mt-4 py-2 px-4 w-full hover:bg-black hover:text-white">
+              Add to Cart
+              <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+          </div>
+        </div>
       </div>
       <!-- Popup code end -->
     {% endfor %}
   </div>
 </section>
+
+<script>
+  //Show and hide pop js start
+  document.addEventListener('DOMContentLoaded', function () {
+    // Show popup when plus icon is clicked
+    var plusIcons = document.querySelectorAll('.plus-icon');
+    plusIcons.forEach(function (icon) {
+      icon.addEventListener('click', function () {
+        var popupId = icon.getAttribute('data-popup-id');
+        var popup = document.getElementById(popupId);
+        if (popup) {
+          popup.classList.remove('hidden');
+        }
+      });
+    });
+
+    // Hide popup when close icon is clicked
+    var closeButtons = document.querySelectorAll('.close-popup');
+    closeButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        var popupOverlay = button.closest('.popup-overlay');
+        if (popupOverlay) {
+          popupOverlay.classList.add('hidden');
+        }
+      });
+    });
+  });
+
+  // Selected Variant button background color swtiching
+  document.addEventListener('DOMContentLoaded', function () {
+    // Store reference to selected variant
+    var selectedVariant = '';
+
+    // Get all variant buttons
+    var variantButtons = document.querySelectorAll('.variant-button');
+
+    // Loop through each button and add click event listener
+    Array.prototype.forEach.call(variantButtons, function (button) {
+      button.addEventListener('click', function () {
+        // Get the variant from the clicked button's data attribute
+        var variant = button.getAttribute('data-variant');
+
+        // Set selected variant
+        selectedVariant = variant;
+
+        // Update button styles
+        Array.prototype.forEach.call(variantButtons, function (btn) {
+          if (btn.getAttribute('data-variant') === selectedVariant) {
+            // Apply Tailwind CSS classes for selected variant
+            btn.classList.add('bg-black', 'text-white');
+            btn.classList.remove('bg-white', 'text-black');
+          } else {
+            // Apply Tailwind CSS classes for unselected variants
+            btn.classList.add('bg-white', 'text-black');
+            btn.classList.remove('bg-black', 'text-white');
+          }
+        });
+      });
+    });
+  });
+</script>
