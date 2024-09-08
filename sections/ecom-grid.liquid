@@ -92,9 +92,7 @@
             {% if product.options.size > 1 and product.options contains 'Size' %}
               <h2 class="font-jost font-normal text-sm">Size</h2>
               <div class="relative w-full">
-                <select
-                  class="w-full appearance-none border border-black p-2 pr-12 font-jost font-normal text-base text-black size-select"
-                >
+                <select class="w-full appearance-none border border-black p-2 pr-12 font-jost font-normal text-base text-black size-select">
                   <!-- Default option -->
                   <option value="" disabled selected>Choose your size</option>
 
@@ -103,7 +101,7 @@
                   {% for variant in product.variants %}
                     {% unless size_options contains variant.option1 %}
                       {% assign size_options = size_options | append: variant.option1 %}
-                      <option value="{{ variant.id }}" class="text-center">
+                      <option value="{{ variant.id }}" data-size="{{ variant.option1 }}" class="text-center">
                         {{ variant.option1 }}
                       </option>
                     {% endunless %}
@@ -115,7 +113,10 @@
 
           <!-- Add to Cart Button -->
           <div class="px-4 pb-4">
-            <button class="bg-black text-white font-jost font-normal mt-4 py-2 px-4 w-full hover:bg-black hover:text-white add-to-cart-button">
+            <button
+              class="bg-black text-white font-jost font-normal mt-4 py-2 px-4 w-full hover:bg-black hover:text-white add-to-cart-button"
+              disabled
+            >
               Add to Cart
               <i class="fas fa-arrow-right ml-2"></i>
             </button>
@@ -126,115 +127,6 @@
     {% endfor %}
   </div>
 </section>
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    let selectedColor = '';
-    let selectedSizeId = '';
-
-    // Show popup when plus icon is clicked
-    document.querySelectorAll('.plus-icon').forEach(function (icon) {
-      icon.addEventListener('click', function () {
-        const popupId = icon.getAttribute('data-popup-id');
-        const popup = document.getElementById(popupId);
-        if (popup) {
-          popup.classList.remove('hidden');
-        }
-      });
-    });
-
-    // Hide popup when close icon is clicked
-    document.querySelectorAll('.close-popup').forEach(function (button) {
-      button.addEventListener('click', function () {
-        const popupOverlay = button.closest('.popup-overlay');
-        if (popupOverlay) {
-          popupOverlay.classList.add('hidden');
-        }
-      });
-    });
-
-    // Handle color variant selection
-    document.querySelectorAll('.color-button').forEach(function (button) {
-      button.addEventListener('click', function () {
-        selectedColor = button.getAttribute('data-variant-color');
-        document.querySelectorAll('.color-button').forEach(function (btn) {
-          if (btn.getAttribute('data-variant-color') === selectedColor) {
-            btn.classList.add('bg-black', 'text-white');
-            btn.classList.remove('bg-white', 'text-black');
-          } else {
-            btn.classList.add('bg-white', 'text-black');
-            btn.classList.remove('bg-black', 'text-white');
-          }
-        });
-        console.log('Selected Color:', selectedColor); // Debugging line
-      });
-    });
-
-    // Handle size selection
-    document.querySelectorAll('.size-select').forEach(function (select) {
-      select.addEventListener('change', function () {
-        selectedSizeId = select.value;
-        console.log('Selected Size ID:', selectedSizeId); // Debugging line
-      });
-    });
-
-    // Create a map of variant IDs based on color and size
-    const variantMap = {};
-    document.querySelectorAll('.color-button').forEach(function (button) {
-      const color = button.getAttribute('data-variant-color');
-      const variantId = button.getAttribute('data-variant-id');
-      if (!variantMap[color]) {
-        variantMap[color] = {};
-      }
-      // Store the variant ID in the map
-      variantMap[color][variantId] = true;
-    });
-
-    // Handle Add to Cart button click
-    document.querySelectorAll('.add-to-cart-button').forEach(function (button) {
-      button.addEventListener('click', function () {
-        if (selectedColor && selectedSizeId) {
-          // Check the variant map for the selected color
-          if (variantMap[selectedColor]) {
-            // Find the correct variant ID based on selected color and size
-            const variantId = Object.keys(variantMap[selectedColor]).find((id) => id === selectedSizeId);
-
-            if (variantId) {
-              fetch('/cart/add.js', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  Accept: 'application/json',
-                },
-                body: JSON.stringify({
-                  items: [
-                    {
-                      id: variantId, // Use the correct variant ID
-                      quantity: 1,
-                    },
-                  ],
-                }),
-              })
-                .then((response) => response.json())
-                .then((data) => {
-                  console.log('Product added to cart:', data);
-                  // Optionally update UI or redirect
-                })
-                .catch((error) => {
-                  console.error('Error adding product to cart:', error);
-                });
-            } else {
-              console.error('No matching variant found for the selected size:', selectedSizeId); // Debugging line
-            }
-          } else {
-            console.error('No matching variant found for the selected color:', selectedColor); // Debugging line
-          }
-        } else {
-          console.error('Color or size ID is missing');
-        }
-      });
-    });
-  });
-</script>
 
 {% schema %}
 {

@@ -1,21 +1,68 @@
-/*
-* ------------------------------------------------------------
-* IMPORTANT: The contents of this file are auto-generated.
-*
-* This file may be updated by the Shopify admin theme editor
-* or related systems. Please exercise caution as any changes
-* made to this file may be overwritten.
-* ------------------------------------------------------------
-*/
 {
   "sections": {
     "banner": {
       "type": "ecom-banner",
       "settings": {
+        "text-logo": "Tisso vison",
+        "info-text": "Find the ideal gift for your loved ones",
+        "gift-btn-text": "Choose Gift",
+        "banner-heading": "The Gift Guide",
+        "banner-text": "Discover Joy Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season",
+        "banner-btn": "SHOP NOW",
+        "banner-bottom-text": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 9XL"
       }
     },
-    "grid":{
-      "type":"ecom-grid"
+    "grid": {
+      "type": "ecom-grid",
+      "blocks": {
+        "product_7ryEj8": {
+          "type": "product",
+          "settings": {
+            "product": "black-leather-bag"
+          }
+        },
+        "product_8kRrVd": {
+          "type": "product",
+          "settings": {
+            "product": "blue-silk-tuxedo"
+          }
+        },
+        "product_WeMd7c": {
+          "type": "product",
+          "settings": {
+            "product": "chequered-red-shirt"
+          }
+        },
+        "product_wzMCgX": {
+          "type": "product",
+          "settings": {
+            "product": "classic-leather-jacket"
+          }
+        },
+        "product_hpAeRY": {
+          "type": "product",
+          "settings": {
+            "product": "classic-varsity-top"
+          }
+        },
+        "product_PGwNNm": {
+          "type": "product",
+          "settings": {
+            "product": "dark-denim-top"
+          }
+        }
+      },
+      "block_order": [
+        "product_7ryEj8",
+        "product_8kRrVd",
+        "product_WeMd7c",
+        "product_wzMCgX",
+        "product_hpAeRY",
+        "product_PGwNNm"
+      ],
+      "settings": {
+        "section_title": "Tisso vision in the wild"
+      }
     }
   },
   "order": [
