@@ -1,10 +1,12 @@
 <section class="py-24 px-10">
   <h2 class="text-black font-lustria font-normal text-2xl sm:text-3xl md:text-4xl lg:text-5xl px-5 w-full text-center sm:text-left">
-    Tisso vision in the wild
+    {{ section.settings.section_title }}
   </h2>
 
   <div class="grid grid-cols-3 gap-4 p-4">
-    {% for product in collections.test.products %}
+    {% for block in section.blocks %}
+      {% assign product = block.settings.product %}
+
       <div class="relative h-auto flex items-center justify-center">
         <!-- Product Image -->
         <img
@@ -14,17 +16,18 @@
         >
 
         <!-- Plus Icon -->
-        <div class="absolute inset-1 flex items-center justify-center">
+        <div class="absolute inset-0 flex items-center justify-center">
           <button
             class="bg-[#F8F8F8] flex items-center justify-center text-black rounded-full w-6 h-6 plus-icon"
             data-popup-id="popup-{{ forloop.index }}"
+            data-product-id="{{ product.id }}"
           >
             <i class="fas fa-plus text-xl"></i>
           </button>
         </div>
       </div>
 
-      <!-- Popup code start -->
+      <!-- Popup -->
       <div
         id="popup-{{ forloop.index }}"
         class="popup-overlay hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50"
@@ -37,33 +40,34 @@
 
           <!-- Product Image and Details -->
           <div class="flex pt-9">
-            <!-- Product Image -->
             <div class="w-1/2 p-4">
               <img
+                id="popup-image-{{ forloop.index }}"
                 src="{{ product.featured_image | img_url: 'large' }}"
                 alt="{{ product.title }}"
                 class="w-[7.5rem] h-[8.75rem] object-cover"
               >
             </div>
 
-            <!-- Product Details -->
             <div class="w-1/2 p-4 flex flex-col justify-between">
               <div>
-                <!-- Product Name -->
-                <h2 class="text-base font-jost font-light mb-2 text-black">{{ product.title }}</h2>
-
-                <!-- Product Price -->
-                <p class="font-lustria font-normal text-base text-black mb-2">{{ product.price | money }}</p>
-
-                <!-- Product Description -->
-                <p class="font-jost font-light text-sm text-black mb-4 truncate">
+                <h2 id="popup-title-{{ forloop.index }}" class="text-base font-jost font-light mb-2 text-black">
+                  {{ product.title }}
+                </h2>
+                <p id="popup-price-{{ forloop.index }}" class="font-lustria font-normal text-base text-black mb-2">
+                  {{ product.price | money }}
+                </p>
+                <p
+                  id="popup-description-{{ forloop.index }}"
+                  class="font-jost font-light text-sm text-black mb-4 truncate"
+                >
                   {{ product.description | truncate: 25 }}
                 </p>
               </div>
             </div>
           </div>
 
-          <!-- Variants and Size Selection -->
+          <!-- Variant Options -->
           <div class="px-4 pb-4">
             {% if product.options.size > 1 and product.options contains 'Color' %}
               <h2 class="font-jost font-normal text-sm">Color</h2>
@@ -73,12 +77,14 @@
                   {% unless color_options contains variant.option2 %}
                     {% assign color_options = color_options | append: variant.option2 %}
                     <button
-                      class="flex w-full border border-black text-sm text-black hover:bg-black hover:text-white focus:outline-none variant-button"
-                      data-variant="{{ variant.option2 }}"
+                      class="flex w-full border border-black text-sm text-black hover:bg-black hover:text-white focus:outline-none color-button"
+                      data-variant-color="{{ variant.option2 }}"
+                      data-variant-id="{{ variant.id }}"
+                      data-popup-id="popup-{{ forloop.index }}"
                     >
                       <span class="w-2 h-full variant-color" style="background-color: {{ variant.option2 }}"></span>
                       <span class="flex py-2 pl-1 justify-start font-jost font-normal text-lg">
-                        {{- variant.option2 -}}
+                        {{ variant.option2 }}
                       </span>
                     </button>
                   {% endunless %}
@@ -90,17 +96,16 @@
               <h2 class="font-jost font-normal text-sm">Size</h2>
               <div class="relative w-full">
                 <select
-                  class="w-full appearance-none border border-black p-2 pr-12 font-jost font-normal text-base text-black"
+                  id="popup-size-select-{{ forloop.index }}"
+                  class="w-full appearance-none border border-black p-2 pr-12 font-jost font-normal text-base text-black size-select"
+                  data-popup-id="popup-{{ forloop.index }}"
                 >
-                  <!-- Default option -->
                   <option value="" disabled selected>Choose your size</option>
-
-                  <!-- Dynamic options -->
                   {% assign size_options = '' %}
                   {% for variant in product.variants %}
                     {% unless size_options contains variant.option1 %}
                       {% assign size_options = size_options | append: variant.option1 %}
-                      <option>
+                      <option value="{{ variant.id }}" data-size="{{ variant.option1 }}">
                         {{ variant.option1 }}
                       </option>
                     {% endunless %}
@@ -112,76 +117,183 @@
 
           <!-- Add to Cart Button -->
           <div class="px-4 pb-4">
-            <!-- Added padding to the parent div for left and right space -->
-            <button class="bg-black text-white font-jost font-normal mt-4 py-2 px-4 w-full hover:bg-black hover:text-white">
+            <button
+              id="popup-add-to-cart-{{ forloop.index }}"
+              class="bg-black text-white font-jost font-normal mt-4 py-2 px-4 w-full hover:bg-black hover:text-white add-to-cart-button"
+              disabled
+            >
               Add to Cart
               <i class="fas fa-arrow-right ml-2"></i>
             </button>
           </div>
         </div>
       </div>
-      <!-- Popup code end -->
     {% endfor %}
   </div>
 </section>
 
+<!-- JavaScript for Popup & Variant Management -->
 <script>
-  //Show and hide pop js start
   document.addEventListener('DOMContentLoaded', function () {
-    // Show popup when plus icon is clicked
-    var plusIcons = document.querySelectorAll('.plus-icon');
-    plusIcons.forEach(function (icon) {
+    let selectedColor = null;
+    let selectedSize = null;
+    let selectedVariantId = null;
+
+    // Open popup
+    document.querySelectorAll('.plus-icon').forEach((icon) => {
       icon.addEventListener('click', function () {
-        var popupId = icon.getAttribute('data-popup-id');
-        var popup = document.getElementById(popupId);
-        if (popup) {
-          popup.classList.remove('hidden');
-        }
+        const popupId = this.getAttribute('data-popup-id');
+        document.getElementById(popupId).classList.remove('hidden');
       });
     });
 
-    // Hide popup when close icon is clicked
-    var closeButtons = document.querySelectorAll('.close-popup');
-    closeButtons.forEach(function (button) {
-      button.addEventListener('click', function () {
-        var popupOverlay = button.closest('.popup-overlay');
-        if (popupOverlay) {
-          popupOverlay.classList.add('hidden');
-        }
-      });
-    });
-  });
-
-  // Selected Variant button background color swtiching
-  document.addEventListener('DOMContentLoaded', function () {
-    // Store reference to selected variant
-    var selectedVariant = '';
-
-    // Get all variant buttons
-    var variantButtons = document.querySelectorAll('.variant-button');
-
-    // Loop through each button and add click event listener
-    Array.prototype.forEach.call(variantButtons, function (button) {
-      button.addEventListener('click', function () {
-        // Get the variant from the clicked button's data attribute
-        var variant = button.getAttribute('data-variant');
-
-        // Set selected variant
-        selectedVariant = variant;
-
-        // Update button styles
-        Array.prototype.forEach.call(variantButtons, function (btn) {
-          if (btn.getAttribute('data-variant') === selectedVariant) {
-            // Apply Tailwind CSS classes for selected variant
-            btn.classList.add('bg-black', 'text-white');
-            btn.classList.remove('bg-white', 'text-black');
-          } else {
-            // Apply Tailwind CSS classes for unselected variants
-            btn.classList.add('bg-white', 'text-black');
-            btn.classList.remove('bg-black', 'text-white');
-          }
+    // Close popup
+    document.querySelectorAll('.close-popup').forEach((closeButton) => {
+      closeButton.addEventListener('click', function () {
+        const popup = this.closest('.popup-overlay');
+        popup.classList.add('hidden');
+        // Reset selected values when popup is closed
+        selectedColor = null;
+        selectedSize = null;
+        selectedVariantId = null;
+        document.querySelectorAll('.color-button').forEach((btn) => {
+          btn.classList.remove('bg-black', 'text-white');
+          btn.classList.add('text-black');
         });
+        document.querySelectorAll('.size-select').forEach((select) => {
+          select.value = ''; // Reset size selection
+          select.disabled = true; // Disable size dropdown
+        });
+        document.querySelectorAll('.add-to-cart-button').forEach((btn) => {
+          btn.disabled = true; // Disable add to cart button
+        });
+      });
+    });
+
+    // Handle color selection
+    document.querySelectorAll('.color-button').forEach((colorButton) => {
+      colorButton.addEventListener('click', function () {
+        const color = this.getAttribute('data-variant-color');
+        const variantId = this.getAttribute('data-variant-id');
+        const popupId = this.getAttribute('data-popup-id');
+
+        if (selectedColor !== color) {
+          selectedColor = color;
+          selectedVariantId = variantId;
+
+          document.querySelectorAll('.color-button').forEach((btn) => {
+            btn.classList.remove('bg-black', 'text-white');
+            btn.classList.add('text-black');
+          });
+
+          colorButton.classList.add('bg-black', 'text-white');
+
+          // Reset size selection and enable size selection dropdown
+          const sizeSelect = document.querySelector(`#popup-size-select-${popupId.split('-')[1]}`);
+          if (sizeSelect) {
+            sizeSelect.disabled = false;
+            sizeSelect.value = ''; // Reset to default value
+            selectedSize = null;
+          }
+        }
+      });
+    });
+
+    // Handle size selection
+    document.querySelectorAll('.size-select').forEach((sizeSelect) => {
+      sizeSelect.addEventListener('change', function () {
+        selectedSize = this.options[this.selectedIndex].getAttribute('data-size');
+        selectedVariantId = this.value;
+
+        const addToCartButton = this.closest('.popup-overlay').querySelector('.add-to-cart-button');
+
+        if (selectedColor && selectedSize) {
+          addToCartButton.disabled = false;
+          addToCartButton.setAttribute('data-variant-id', selectedVariantId);
+          addToCartButton.setAttribute('data-variant-size', selectedSize);
+          addToCartButton.setAttribute('data-variant-color', selectedColor);
+        }
+      });
+    });
+
+    // Add to cart functionality
+    document.querySelectorAll('.add-to-cart-button').forEach((addButton) => {
+      addButton.addEventListener('click', function () {
+        const variantId = this.getAttribute('data-variant-id');
+        const variantSize = this.getAttribute('data-variant-size');
+        const variantColor = this.getAttribute('data-variant-color');
+
+        if (!variantId || !variantSize || !variantColor) {
+          console.error('Cannot add to cart: missing variant information.');
+          return;
+        }
+
+        console.log('Adding to cart:', {
+          id: variantId,
+          quantity: 1,
+          properties: {
+            Size: variantSize,
+            Color: variantColor,
+          },
+        });
+
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: variantId,
+            quantity: 1,
+            properties: {
+              Size: variantSize,
+              Color: variantColor,
+            },
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log('Added to cart:', data);
+            alert('Product added to cart!');
+          })
+          .catch((error) => {
+            console.error('Error adding to cart:', error);
+          });
       });
     });
   });
 </script>
+
+{% schema %}
+{
+  "name": "Product Grid with Popup",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Tisso vision in the wild"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product Block",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Select Product"
+        }
+      ]
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Product Grid with Popup",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
