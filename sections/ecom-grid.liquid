@@ -6,6 +6,7 @@
   <div class="grid grid-cols-3 gap-4 p-4">
     {% for block in section.blocks %}
       {% assign product = block.settings.product %}
+      {% assign popup_id = 'popup-' | append: forloop.index %}
 
       <div class="relative h-auto flex items-center justify-center">
         <!-- Product Image -->
@@ -19,7 +20,7 @@
         <div class="absolute inset-0 flex items-center justify-center">
           <button
             class="bg-[#F8F8F8] flex items-center justify-center text-black rounded-full w-6 h-6 plus-icon"
-            data-popup-id="popup-{{ forloop.index }}"
+            data-popup-id="{{ popup_id }}"
             data-product-id="{{ product.id }}"
           >
             <i class="fas fa-plus text-xl"></i>
@@ -29,13 +30,16 @@
 
       <!-- Popup -->
       <div
-        id="popup-{{ forloop.index }}"
+        id="{{ popup_id }}"
         class="popup-overlay hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50"
         data-variants="{{ product.variants | json | escape }}"
       >
         <div class="relative w-[20.438rem] h-fit bg-white border rounded-lg shadow-md overflow-hidden m-auto">
           <!-- Close Icon -->
-          <button class="absolute top-2 right-5 text-black hover:text-gray-800 focus:outline-none close-popup">
+          <button
+            class="absolute top-2 right-5 text-black hover:text-gray-800 focus:outline-none close-popup"
+            data-popup-id="{{ popup_id }}"
+          >
             <i class="fas fa-times"></i>
           </button>
 
@@ -78,10 +82,10 @@
                   {% unless color_options contains variant.option2 %}
                     {% assign color_options = color_options | append: variant.option2 %}
                     <button
-                      class="flex w-full border border-black text-sm text-black hover:bg-black hover:text-white focus:outline-none color-button"
+                      class="color-button flex w-full border border-black text-sm text-black hover:bg-black hover:text-white focus:outline-none"
                       data-variant-color="{{ variant.option2 }}"
                       data-variant-id="{{ variant.id }}"
-                      data-popup-id="popup-{{ forloop.index }}"
+                      data-popup-id="{{ popup_id }}"
                     >
                       <span class="w-2 h-full variant-color" style="background-color: {{ variant.option2 }}"></span>
                       <span class="flex py-2 pl-1 justify-start font-jost font-normal text-lg">
@@ -98,8 +102,8 @@
               <div class="relative w-full">
                 <select
                   id="popup-size-select-{{ forloop.index }}"
-                  class="w-full appearance-none border border-black p-2 pr-12 font-jost font-normal text-base text-black size-select"
-                  data-popup-id="popup-{{ forloop.index }}"
+                  class="size-select w-full appearance-none border border-black p-2 pr-12 font-jost font-normal text-base text-black"
+                  data-popup-id="{{ popup_id }}"
                 >
                   <option value="" disabled selected>Choose your size</option>
                   {% assign size_options = '' %}
@@ -120,7 +124,8 @@
           <div class="px-4 pb-4">
             <button
               id="popup-add-to-cart-{{ forloop.index }}"
-              class="bg-black text-white font-jost font-normal mt-4 py-2 px-4 w-full hover:bg-black hover:text-white add-to-cart-button"
+              class="add-to-cart-button bg-black text-white font-jost font-normal mt-4 py-2 px-4 w-full hover:bg-black hover:text-white"
+              data-popup-id="{{ popup_id }}"
               disabled
             >
               Add to Cart
@@ -140,30 +145,41 @@
     let selectedSize = null;
     let selectedVariantId = null;
 
-    // Open popup
-    document.querySelectorAll('.plus-icon').forEach((icon) => {
-      icon.addEventListener('click', function () {
-        const popupId = this.getAttribute('data-popup-id');
-        document.getElementById(popupId).classList.remove('hidden');
-      });
-    });
+    // Function to open a popup
+    function openPopup(popupId) {
+      const popup = document.getElementById(popupId);
+      if (popup) {
+        popup.classList.remove('hidden');
+        console.log(Opened popup with ID ${popupId});
+      } else {
+        console.error(Popup with ID ${popupId} not found.);
+      }
+    }
 
-    // Close popup
-    document.querySelectorAll('.close-popup').forEach((closeButton) => {
-      closeButton.addEventListener('click', function () {
-        const popup = this.closest('.popup-overlay');
+    // Function to close a popup
+    function closePopup(popup) {
+      if (popup) {
         popup.classList.add('hidden');
         resetSelections(popup);
-      });
-    });
+      } else {
+        console.error('Popup not found for close button.');
+      }
+    }
 
+    // Function to reset selections
     function resetSelections(popup) {
+      if (!popup) {
+        console.error('Popup is null in resetSelections.');
+        return;
+      }
+
       selectedColor = null;
       selectedSize = null;
       selectedVariantId = null;
 
       // Reset color buttons
-      popup.querySelectorAll('.color-button').forEach((btn) => {
+      const colorButtons = popup.querySelectorAll('.color-button');
+      colorButtons.forEach((btn) => {
         btn.classList.remove('bg-black', 'text-white');
         btn.classList.add('text-black');
       });
@@ -182,13 +198,18 @@
       }
     }
 
-    // Handle color selection
-    document.querySelectorAll('.color-button').forEach((colorButton) => {
-      colorButton.addEventListener('click', function () {
-        const color = this.getAttribute('data-variant-color');
-        const popupId = this.getAttribute('data-popup-id');
-        const popup = document.getElementById(popupId);
+    // Function to handle color selection
+    function handleColorSelection(colorButton) {
+      const color = colorButton.getAttribute('data-variant-color');
+      const popupId = colorButton.getAttribute('data-popup-id');
 
+      if (!popupId) {
+        console.error('data-popup-id is null or undefined.');
+        return;
+      }
+
+      const popup = document.getElementById(popupId);
+      if (popup) {
         if (selectedColor !== color) {
           selectedColor = color;
           selectedSize = null; // Reset size when color changes
@@ -214,20 +235,26 @@
             btn.classList.remove('bg-black', 'text-white');
             btn.classList.add('text-black');
           });
-          this.classList.add('bg-black', 'text-white');
+          colorButton.classList.add('bg-black', 'text-white');
         }
-      });
-    });
+      } else {
+        console.error(Popup with ID ${popupId} not found.);
+      }
+    }
 
-    // Handle size selection
-    document.querySelectorAll('.size-select').forEach((sizeSelect) => {
-      sizeSelect.addEventListener('change', function () {
-        const selectedOption = this.options[this.selectedIndex];
-        selectedSize = selectedOption.getAttribute('data-size');
-        const popupId = this.getAttribute('data-popup-id');
-        const popup = document.getElementById(popupId);
+    // Function to handle size selection
+    function handleSizeSelection(sizeSelect) {
+      const selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
+      selectedSize = selectedOption.getAttribute('data-size');
+      const popupId = sizeSelect.getAttribute('data-popup-id');
 
-        // Find the correct variant ID based on selected color and size
+      if (!popupId) {
+        console.error('data-popup-id is null or undefined.');
+        return;
+      }
+
+      const popup = document.getElementById(popupId);
+      if (popup) {
         selectedVariantId = getVariantId(selectedColor, selectedSize, popup);
 
         // Enable the Add to Cart button if both color and size are selected
@@ -238,9 +265,12 @@
           addToCartButton.setAttribute('data-variant-size', selectedSize);
           addToCartButton.setAttribute('data-variant-color', selectedColor);
         }
-      });
-    });
+      } else {
+        console.error(Popup with ID ${popupId} not found.);
+      }
+    }
 
+    // Function to get variant ID based on color and size
     function getVariantId(color, size, popup) {
       const variantsString = popup.getAttribute('data-variants');
       let variants;
@@ -256,60 +286,96 @@
       return variant ? variant.id : null;
     }
 
-    // Add to cart functionality
-    document.querySelectorAll('.add-to-cart-button').forEach((addButton) => {
-      let addingToCart = false; // Flag to prevent multiple additions
-
-      addButton.addEventListener('click', function () {
-        if (addingToCart) return; // Prevent further clicks if already processing
-        addingToCart = true;
-
-        const variantId = this.getAttribute('data-variant-id');
-        const variantSize = this.getAttribute('data-variant-size');
-        const variantColor = this.getAttribute('data-variant-color');
-
-        if (!variantId || !variantSize || !variantColor) {
-          console.error('Cannot add to cart: missing variant information.');
-          addingToCart = false;
-          return;
-        }
-
-        console.log('Adding to cart:', {
-          id: variantId,
-          quantity: 1,
-          properties: {
-            Size: variantSize,
-            Color: variantColor,
-          },
+    // Function to initialize event listeners
+    function initialize() {
+      // Open popup event
+      document.querySelectorAll('.plus-icon').forEach((icon) => {
+        icon.addEventListener('click', function () {
+          const popupId = this.getAttribute('data-popup-id');
+          console.log(Clicked plus icon with data-popup-id ${popupId});
+          openPopup(popupId);
         });
-
-        fetch('/cart/add.js', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            id: variantId,
-            quantity: 1,
-            properties: {
-              Size: variantSize,
-              Color: variantColor,
-            },
-          }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log('Added to cart:', data);
-            alert('Product added to cart!');
-          })
-          .catch((error) => {
-            console.error('Error adding to cart:', error);
-          })
-          .finally(() => {
-            addingToCart = false; // Re-enable button after request completes
-          });
       });
-    });
+
+      // Close popup event
+      document.querySelectorAll('.close-popup').forEach((closeButton) => {
+        closeButton.addEventListener('click', function () {
+          const popup = this.closest('.popup-overlay');
+          closePopup(popup);
+        });
+      });
+
+      // Color button events
+      document.querySelectorAll('.color-button').forEach((colorButton) => {
+        colorButton.addEventListener('click', function () {
+          handleColorSelection(colorButton);
+        });
+      });
+
+      // Size select events
+      document.querySelectorAll('.size-select').forEach((sizeSelect) => {
+        sizeSelect.addEventListener('change', function () {
+          handleSizeSelection(sizeSelect);
+        });
+      });
+
+      // Add to cart button events
+      document.querySelectorAll('.add-to-cart-button').forEach((addButton) => {
+        addButton.addEventListener('click', function () {
+          const variantId = this.getAttribute('data-variant-id');
+          const variantSize = this.getAttribute('data-variant-size');
+          const variantColor = this.getAttribute('data-variant-color');
+          const popupId = this.getAttribute('data-popup-id');
+
+          if (!variantId || !variantSize || !variantColor || !popupId) {
+            console.error('Cannot add to cart: missing variant or popup information.');
+            return;
+          }
+
+          fetch('/cart.js')
+            .then((response) => response.json())
+            .then((cart) => {
+              const existingItem = cart.items.find((item) => item.id === parseInt(variantId, 10));
+              if (!existingItem) {
+                // Add to cart if the item is not already in the cart
+                return fetch('/cart/add.js', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    id: variantId,
+                    quantity: 1,
+                    properties: {
+                      Size: variantSize,
+                      Color: variantColor,
+                    },
+                  }),
+                });
+              } else {
+                console.warn('Item is already in the cart.');
+              }
+            })
+            .then((response) => response.json())
+            .then((data) => {
+              const popup = document.getElementById(popupId);
+              if (popup) {
+                resetSelections(popup);
+                popup.classList.add('hidden');
+              } else {
+                console.error(Popup with ID ${popupId} not found.);
+              }
+              console.log('Product added to cart');
+              alert('Product added to cart!');
+            })
+            .catch((error) => {
+              console.error('Error adding to cart:', error);
+            });
+        });
+      });
+    }
+
+    initialize();
   });
 </script>
 
