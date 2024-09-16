@@ -150,9 +150,9 @@
       const popup = document.getElementById(popupId);
       if (popup) {
         popup.classList.remove('hidden');
-        console.log(Opened popup with ID ${popupId});
+        console.log(`Opened popup with ID ${popupId}`);
       } else {
-        console.error(Popup with ID ${popupId} not found.);
+        console.error(`Popup with ID ${popupId} not found.`);
       }
     }
 
@@ -168,11 +168,6 @@
 
     // Function to reset selections
     function resetSelections(popup) {
-      if (!popup) {
-        console.error('Popup is null in resetSelections.');
-        return;
-      }
-
       selectedColor = null;
       selectedSize = null;
       selectedVariantId = null;
@@ -202,11 +197,6 @@
     function handleColorSelection(colorButton) {
       const color = colorButton.getAttribute('data-variant-color');
       const popupId = colorButton.getAttribute('data-popup-id');
-
-      if (!popupId) {
-        console.error('data-popup-id is null or undefined.');
-        return;
-      }
 
       const popup = document.getElementById(popupId);
       if (popup) {
@@ -238,7 +228,7 @@
           colorButton.classList.add('bg-black', 'text-white');
         }
       } else {
-        console.error(Popup with ID ${popupId} not found.);
+        console.error(`Popup with ID ${popupId} not found.`);
       }
     }
 
@@ -247,11 +237,6 @@
       const selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
       selectedSize = selectedOption.getAttribute('data-size');
       const popupId = sizeSelect.getAttribute('data-popup-id');
-
-      if (!popupId) {
-        console.error('data-popup-id is null or undefined.');
-        return;
-      }
 
       const popup = document.getElementById(popupId);
       if (popup) {
@@ -262,11 +247,9 @@
         if (selectedColor && selectedSize && selectedVariantId) {
           addToCartButton.disabled = false;
           addToCartButton.setAttribute('data-variant-id', selectedVariantId);
-          addToCartButton.setAttribute('data-variant-size', selectedSize);
-          addToCartButton.setAttribute('data-variant-color', selectedColor);
         }
       } else {
-        console.error(Popup with ID ${popupId} not found.);
+        console.error(`Popup with ID ${popupId} not found.`);
       }
     }
 
@@ -286,96 +269,85 @@
       return variant ? variant.id : null;
     }
 
-    // Function to initialize event listeners
-    function initialize() {
-      // Open popup event
-      document.querySelectorAll('.plus-icon').forEach((icon) => {
-        icon.addEventListener('click', function () {
-          const popupId = this.getAttribute('data-popup-id');
-          console.log(Clicked plus icon with data-popup-id ${popupId});
+    // Event listener for dynamically added elements
+    document.body.addEventListener('click', function (event) {
+      // Handle opening of the popup
+      if (event.target.closest('.plus-icon')) {
+        const plusIcon = event.target.closest('.plus-icon');
+        const popupId = plusIcon.getAttribute('data-popup-id');
+        console.log(`Clicked plus icon with data-popup-id ${popupId}`);
+
+        if (popupId) {
           openPopup(popupId);
-        });
-      });
+        } else {
+          console.error('No popup ID found for the plus icon.');
+        }
+      }
 
-      // Close popup event
-      document.querySelectorAll('.close-popup').forEach((closeButton) => {
-        closeButton.addEventListener('click', function () {
-          const popup = this.closest('.popup-overlay');
-          closePopup(popup);
-        });
-      });
+      // Handle closing of the popup
+      if (event.target.closest('.close-popup')) {
+        const popup = event.target.closest('.popup-overlay');
+        closePopup(popup);
+      }
 
-      // Color button events
-      document.querySelectorAll('.color-button').forEach((colorButton) => {
-        colorButton.addEventListener('click', function () {
-          handleColorSelection(colorButton);
-        });
-      });
+      // Handle color selection
+      if (event.target.closest('.color-button')) {
+        handleColorSelection(event.target.closest('.color-button'));
+      }
 
-      // Size select events
-      document.querySelectorAll('.size-select').forEach((sizeSelect) => {
-        sizeSelect.addEventListener('change', function () {
-          handleSizeSelection(sizeSelect);
-        });
-      });
+      // Handle add to cart button click
+      if (event.target.closest('.add-to-cart-button')) {
+        const addButton = event.target.closest('.add-to-cart-button');
+        const variantId = addButton.getAttribute('data-variant-id');
+        const popupId = addButton.getAttribute('data-popup-id');
 
-      // Add to cart button events
-      document.querySelectorAll('.add-to-cart-button').forEach((addButton) => {
-        addButton.addEventListener('click', function () {
-          const variantId = this.getAttribute('data-variant-id');
-          const variantSize = this.getAttribute('data-variant-size');
-          const variantColor = this.getAttribute('data-variant-color');
-          const popupId = this.getAttribute('data-popup-id');
+        if (!variantId || !popupId) {
+          console.error('Cannot add to cart: missing variant or popup information.');
+          return;
+        }
 
-          if (!variantId || !variantSize || !variantColor || !popupId) {
-            console.error('Cannot add to cart: missing variant or popup information.');
-            return;
-          }
+        fetch('/cart.js')
+          .then((response) => response.json())
+          .then((cart) => {
+            const existingItem = cart.items.find((item) => item.id === parseInt(variantId, 10));
+            if (!existingItem) {
+              // Add to cart if the item is not already in the cart
+              return fetch('/cart/add.js', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  id: variantId,
+                  quantity: 1,
+                }),
+              });
+            } else {
+              console.warn('Item is already in the cart.');
+            }
+          })
+          .then((response) => response.json())
+          .then((data) => {
+            const popup = document.getElementById(popupId);
+            if (popup) {
+              resetSelections(popup);
+              popup.classList.add('hidden');
+            }
+            console.log('Product added to cart');
+            alert('Product added to cart!');
+          })
+          .catch((error) => {
+            console.error('Error adding to cart:', error);
+          });
+      }
+    });
 
-          fetch('/cart.js')
-            .then((response) => response.json())
-            .then((cart) => {
-              const existingItem = cart.items.find((item) => item.id === parseInt(variantId, 10));
-              if (!existingItem) {
-                // Add to cart if the item is not already in the cart
-                return fetch('/cart/add.js', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    id: variantId,
-                    quantity: 1,
-                    properties: {
-                      Size: variantSize,
-                      Color: variantColor,
-                    },
-                  }),
-                });
-              } else {
-                console.warn('Item is already in the cart.');
-              }
-            })
-            .then((response) => response.json())
-            .then((data) => {
-              const popup = document.getElementById(popupId);
-              if (popup) {
-                resetSelections(popup);
-                popup.classList.add('hidden');
-              } else {
-                console.error(Popup with ID ${popupId} not found.);
-              }
-              console.log('Product added to cart');
-              alert('Product added to cart!');
-            })
-            .catch((error) => {
-              console.error('Error adding to cart:', error);
-            });
-        });
-      });
-    }
-
-    initialize();
+    // Event listener for the size selection change event
+    document.body.addEventListener('change', function (event) {
+      if (event.target.matches('.size-select')) {
+        handleSizeSelection(event.target);
+      }
+    });
   });
 </script>
 
