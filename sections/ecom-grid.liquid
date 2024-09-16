@@ -145,15 +145,13 @@
     let selectedSize = null;
     let selectedVariantId = null;
 
-    // Function to open a popup
+    // Open a popup
     function openPopup(popupId) {
       const popup = document.getElementById(popupId);
-      if (popup) {
-        popup.classList.remove('hidden');
-      }
+      if (popup) popup.classList.remove('hidden');
     }
 
-    // Function to close a popup
+    // Close a popup and reset selections
     function closePopup(popup) {
       if (popup) {
         popup.classList.add('hidden');
@@ -161,15 +159,14 @@
       }
     }
 
-    // Function to reset selections
+    // Reset selections
     function resetSelections(popup) {
       selectedColor = null;
       selectedSize = null;
       selectedVariantId = null;
 
       // Reset color buttons
-      const colorButtons = popup.querySelectorAll('.color-button');
-      colorButtons.forEach((btn) => {
+      popup.querySelectorAll('.color-button').forEach((btn) => {
         btn.classList.remove('bg-black', 'text-white');
         btn.classList.add('text-black');
       });
@@ -187,110 +184,90 @@
 
       // Disable add to cart button
       const addToCartButton = popup.querySelector('.add-to-cart-button');
-      if (addToCartButton) {
-        addToCartButton.disabled = true;
-      }
+      if (addToCartButton) addToCartButton.disabled = true;
     }
 
-    // Function to handle color selection
+    // Handle color selection
     function handleColorSelection(colorButton) {
-      const color = colorButton.getAttribute('data-variant-color');
-      const popupId = colorButton.getAttribute('data-popup-id');
-
+      const color = colorButton.dataset.variantColor;
+      const popupId = colorButton.dataset.popupId;
       const popup = document.getElementById(popupId);
-      if (popup) {
-        if (selectedColor !== color) {
-          selectedColor = color;
-          selectedSize = null; // Reset size when color changes
-          selectedVariantId = null;
 
-          // Reset and enable size selection for the selected color
-          const sizeSelect = popup.querySelector('.size-select');
-          if (sizeSelect) {
-            sizeSelect.disabled = false;
-            sizeSelect.value = ''; // Reset to default value
+      if (popup && selectedColor !== color) {
+        selectedColor = color;
+        selectedSize = null;
+        selectedVariantId = null;
 
-            // Filter the sizes based on the selected color
-            const variants = JSON.parse(popup.getAttribute('data-variants'));
-            sizeSelect.querySelectorAll('option').forEach((option) => {
-              const size = option.getAttribute('data-size');
-              const matchingVariant = variants.find((variant) => variant.option1 === size && variant.option2 === color);
-              option.disabled = !matchingVariant;
-              option.classList.remove('bg-black', 'text-white');
-              if (option.disabled) {
-                option.classList.add('text-gray-500');
-              }
-            });
-          }
+        // Reset and enable size selection for the selected color
+        const sizeSelect = popup.querySelector('.size-select');
+        if (sizeSelect) {
+          sizeSelect.disabled = false;
+          sizeSelect.value = ''; // Reset to default value
 
-          // Update button styles
-          popup.querySelectorAll('.color-button').forEach((btn) => {
-            btn.classList.remove('bg-black', 'text-white');
-            btn.classList.add('text-black');
+          // Filter sizes based on the selected color
+          const variants = JSON.parse(popup.dataset.variants);
+          sizeSelect.querySelectorAll('option').forEach((option) => {
+            const size = option.dataset.size;
+            const matchingVariant = variants.find((variant) => variant.option1 === size && variant.option2 === color);
+            option.disabled = !matchingVariant;
+            option.classList.toggle('text-gray-500', option.disabled);
           });
-          colorButton.classList.add('bg-black', 'text-white');
         }
+
+        // Update button styles
+        popup.querySelectorAll('.color-button').forEach((btn) => {
+          btn.classList.remove('bg-black', 'text-white');
+          btn.classList.add('text-black');
+        });
+        colorButton.classList.add('bg-black', 'text-white');
       }
     }
 
-    // Function to handle size selection
+    // Handle size selection
     function handleSizeSelection(sizeSelect) {
       const selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
-      selectedSize = selectedOption.getAttribute('data-size');
-      const popupId = sizeSelect.getAttribute('data-popup-id');
-
+      selectedSize = selectedOption.dataset.size;
+      const popupId = sizeSelect.dataset.popupId;
       const popup = document.getElementById(popupId);
+
       if (popup) {
         selectedVariantId = getVariantId(selectedColor, selectedSize, popup);
 
-        // Enable the Add to Cart button if both color and size are selected
+        // Enable Add to Cart button if both color and size are selected
         const addToCartButton = popup.querySelector('.add-to-cart-button');
         if (selectedColor && selectedSize && selectedVariantId) {
           addToCartButton.disabled = false;
-          addToCartButton.setAttribute('data-variant-id', selectedVariantId);
+          addToCartButton.dataset.variantId = selectedVariantId;
         }
 
-        // Update the background color and text color of the selected size option
+        // Update the background and text color of the selected size option
         sizeSelect.querySelectorAll('option').forEach((option) => {
-          if (option.selected) {
-            option.style.backgroundColor = '#000'; // Tailwind's black color
-            option.style.color = '#fff'; // Tailwind's white color
-          } else {
-            option.style.backgroundColor = ''; // Reset to default
-            option.style.color = ''; // Reset to default
-          }
+          option.style.backgroundColor = option.selected ? '#000' : '';
+          option.style.color = option.selected ? '#fff' : '';
         });
       }
     }
 
-    // Function to get variant ID based on color and size
+    // Get variant ID based on color and size
     function getVariantId(color, size, popup) {
-      const variantsString = popup.getAttribute('data-variants');
-      let variants;
-
       try {
-        variants = JSON.parse(variantsString);
+        const variants = JSON.parse(popup.dataset.variants);
+        const variant = variants.find((v) => v.option2 === color && v.option1 === size);
+        return variant ? variant.id : null;
       } catch (e) {
         return null;
       }
-
-      const variant = variants.find((v) => v.option2 === color && v.option1 === size);
-      return variant ? variant.id : null;
     }
 
     // Event listener for dynamically added elements
     document.body.addEventListener('click', function (event) {
-      // Handle opening of the popup
+      // Open popup
       if (event.target.closest('.plus-icon')) {
-        const plusIcon = event.target.closest('.plus-icon');
-        const popupId = plusIcon.getAttribute('data-popup-id');
-
-        if (popupId) {
-          openPopup(popupId);
-        }
+        const popupId = event.target.closest('.plus-icon').dataset.popupId;
+        if (popupId) openPopup(popupId);
       }
 
-      // Handle closing of the popup
+      // Close popup
       if (event.target.closest('.close-popup')) {
         const popup = event.target.closest('.popup-overlay');
         closePopup(popup);
@@ -301,11 +278,11 @@
         handleColorSelection(event.target.closest('.color-button'));
       }
 
-      // Handle add to cart button click
+      // Handle Add to Cart button click
       if (event.target.closest('.add-to-cart-button')) {
         const addButton = event.target.closest('.add-to-cart-button');
-        const variantId = addButton.getAttribute('data-variant-id');
-        const popupId = addButton.getAttribute('data-popup-id');
+        const variantId = addButton.dataset.variantId;
+        const popupId = addButton.dataset.popupId;
 
         if (variantId && popupId) {
           fetch('/cart.js')
@@ -318,14 +295,10 @@
                   headers: {
                     'Content-Type': 'application/json',
                   },
-                  body: JSON.stringify({
-                    id: variantId,
-                    quantity: 1,
-                  }),
+                  body: JSON.stringify({ id: variantId, quantity: 1 }),
                 });
               }
             })
-            .then((response) => response.json())
             .then(() => {
               const popup = document.getElementById(popupId);
               if (popup) {
@@ -335,14 +308,12 @@
               alert('Product added to cart!');
               window.location.href = '/cart';
             })
-            .catch((error) => {
-              console.error('Error adding to cart:', error);
-            });
+            .catch((error) => console.error('Error adding to cart:', error));
         }
       }
     });
 
-    // Event listener for the size selection change event
+    // Event listener for size selection
     document.body.addEventListener('change', function (event) {
       if (event.target.matches('.size-select')) {
         handleSizeSelection(event.target);
